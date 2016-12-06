@@ -1,0 +1,29 @@
+#cloud-config
+hostname: [Le nom de votre machine]
+users:
+  - name: [Votre nom d'utilisateur]
+    # mkpasswd --method=SHA-512 --rounds=4096
+    passwd: [cf. La commande précédente pour créer le hash de votre mot de passe]
+    groups:
+      - sudo
+      - docker
+
+coreos:
+  etcd:
+    # https://discovery.etcd.io/new
+    discovery: [Cf. Récupérez le lien que vous donne le lien précédent et gardez le si vous voulez créer un cluster]
+  units:
+    - name: etcd.service
+      command: start
+    - name: fleet.service
+      command: start
+
+write_files:
+  - path: /etc/environment
+    permissions: 0644
+    content: |
+      PUBLIC_IPV4=[Votre IP]
+
+# Ce n'est pas obligatoire mais vous pouvez utiliser l'authentification par SSH
+ssh_authorized_keys:
+  - ssh-rsa [Votre clé publique SSH] core
